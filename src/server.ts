@@ -1,4 +1,3 @@
-// the polyfills must be the first thing imported in node.js
 import 'angular2-universal-polyfills';
 
 import * as path from 'path';
@@ -6,35 +5,27 @@ import * as express from 'express';
 import * as bodyParser from 'body-parser';
 import * as cookieParser from 'cookie-parser';
 
-// Angular 2
 import { enableProdMode } from '@angular/core';
-// Angular 2 Universal
 import { createEngine } from 'angular2-express-engine';
 
-// App
 import { MainModule } from './main.node';
 
-// enable prod for faster renders
 enableProdMode();
 
 const app = express();
 const ROOT = path.join(path.resolve(__dirname, '..'));
 
-// Express View
 app.engine('.html', createEngine({}));
 app.set('views', __dirname);
 app.set('view engine', 'html');
 
-app.use(cookieParser('Angular 2 Universal'));
+app.use(cookieParser('Angular 2 Node.js'));
 app.use(bodyParser.json());
 
-// Serve static files
 app.use('/', express.static(path.join(__dirname, 'assets')));
 app.use(express.static(path.join(ROOT, 'dist/client')));
 
-
 import { serverApi } from './backend/api';
-// Our API for demos only
 app.get('/data.json', serverApi);
 
 function ngApp(req, res) {
@@ -45,11 +36,9 @@ function ngApp(req, res) {
     baseUrl: '/'
   });
 }
-// Routes with html5pushstate
-// ensure routes match client-side-app
+
 app.get('/', ngApp);
 app.get('/[a-zA-Z0-9\-]+', ngApp);
-
 
 app.get('*', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
@@ -58,7 +47,6 @@ app.get('*', function(req, res) {
   res.status(404).send(json);
 });
 
-// Server
 let server = app.listen(process.env.PORT || 3000, () => {
   console.log(`Listening on: http://localhost:${server.address().port}`);
 });
