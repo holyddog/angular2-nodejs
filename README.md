@@ -4,7 +4,7 @@
 
 ## Serve
 
-* `npm start` to build your client app and start a web server
+* `npm start`
 
 ## Development
 * run `npm start` and `npm run watch`
