@@ -5,8 +5,7 @@ import { Router, ActivatedRoute, Params } from '@angular/router';
 @Component({
   selector: 'app',
   template: `
-  <h1>Angular 2 Node.js</h1>
-  <router-outlet></router-outlet>
+    <router-outlet></router-outlet>
   `
 })
 export class App {
@@ -15,11 +14,14 @@ export class App {
 @Component({
   template: `
     <h3>Mammals List</h3>
-    <ul class="menu">
+    <div *ngIf="mammals == null">Loading...</div>
+    <ul class="menu" *ngIf="mammals">
       <li *ngFor="let m of mammals" (click)="showDetail(m.id)" class="item"> 
         <span>{{m.name}}</span>
       </li>
     </ul>
+    <button (click)="gotoAdmin()">Admin</button>
+    <button (click)="gotoLogIn()">Log In</button>
   `,
   styles: [`
     .menu {
@@ -31,7 +33,7 @@ export class App {
       margin: 0;
       background-color: #eee;
       padding: 10px;
-      margin-bottom: 10px;
+      margin-bottom: 15px;
     }
   `]
 })
@@ -46,6 +48,14 @@ export class Home implements OnInit {
         this.mammals = mammals;
       }
     );
+  }
+
+  gotoAdmin(): void {
+
+  }
+
+  gotoLogIn(): void {
+    this.router.navigate(['/login']);
   }
 
   showDetail(id: number): void {
@@ -83,5 +93,24 @@ export class Detail implements OnInit {
         }
       );
     });
+  }
+}
+
+@Component({
+  template: `
+    <button (click)="logIn()">Log In</button>
+    <button (click)="logOut()">Log Out</button>
+  `
+})
+
+export class Login {
+  constructor(private router: Router) {}
+
+  logIn(): void {
+
+  }
+
+  logOut(): void {
+    this.router.navigate(['/']);
   }
 }
