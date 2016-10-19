@@ -3,12 +3,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 import { UniversalModule } from 'angular2-universal';
 
-import { App, Home } from './app/app';
+import { App, Home, Detail } from './app/app';
 import { AppService } from './app/app.service';
 
 @NgModule({
   bootstrap: [ App ],
-  declarations: [ App, Home ],
+  declarations: [ App, Home, Detail ],
   providers: [
     AppService
   ],
@@ -16,7 +16,8 @@ import { AppService } from './app/app.service';
     UniversalModule,
     FormsModule,
     RouterModule.forRoot([
-      { path: '', component: Home, pathMatch: 'full' }
+      { path: '', component: Home, pathMatch: 'full' },
+      { path: 'detail/:id', component: Detail }
     ])
   ]
 })
