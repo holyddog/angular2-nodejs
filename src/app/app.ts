@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { AppService } from './app.service';
-import { Router, ActivatedRoute, Params } from '@angular/router';
+import { AuthService } from './auth.service';
+import { Router, ActivatedRoute, Params, NavigationExtras } from '@angular/router';
 
 @Component({
   selector: 'app',
@@ -21,7 +22,8 @@ export class App {
       </li>
     </ul>
     <button (click)="gotoAdmin()">Admin</button>
-    <button (click)="gotoLogIn()">Log In</button>
+    <button (click)="gotoLogIn()" *ngIf="!authService.isLoggedIn">Log In</button>
+    <button (click)="authService.logout()" *ngIf="authService.isLoggedIn">Log Out</button>
   `,
   styles: [`
     .menu {
@@ -40,7 +42,10 @@ export class App {
 export class Home implements OnInit {
   mammals: Object[];
 
-  constructor(private router: Router, private appService: AppService) { }
+  constructor(
+    private router: Router, 
+    private appService: AppService, 
+    private authService: AuthService) { }
 
   ngOnInit(): void {
     this.appService.getMammals().then(
@@ -51,11 +56,14 @@ export class Home implements OnInit {
   }
 
   gotoAdmin(): void {
-
+    this.router.navigate(['/admin']);
   }
 
   gotoLogIn(): void {
-    this.router.navigate(['/login']);
+    let navigationExtras: NavigationExtras = {
+			queryParams: { 'continue': this.router.url }
+		};
+		this.router.navigate(['/login'], navigationExtras);
   }
 
   showDetail(id: number): void {
@@ -98,19 +106,45 @@ export class Detail implements OnInit {
 
 @Component({
   template: `
+    <h3>Admin</h3>
+    <div>Login status = true</div>
+  `
+})
+
+export class Admin {
+}
+
+@Component({
+  template: `
     <button (click)="logIn()">Log In</button>
-    <button (click)="logOut()">Log Out</button>
   `
 })
 
 export class Login {
-  constructor(private router: Router) {}
-
-  logIn(): void {
-
+  constructor(public authService: AuthService, public router: Router) {
+    if (authService.isLoggedIn) {
+      this.router.navigate(['/']);
+    }
   }
 
-  logOut(): void {
+  goHome(): void {
     this.router.navigate(['/']);
+  }
+
+  logIn(): void {
+    this.authService.login().subscribe(() => {
+      if (this.authService.isLoggedIn) {
+        let redirect = this.authService.redirectUrl ? this.authService.redirectUrl : '/';
+
+        let redirectUrl = this.router.parseUrl(this.router.url).queryParams['continue'];
+        if (redirectUrl != null) {
+          let navigationExtras: NavigationExtras = this.router.parseUrl(redirectUrl);
+          this.router.navigate([redirectUrl.split('?')[0]], navigationExtras);
+        }
+        else {
+          this.router.navigate([redirect]);
+        }
+      }
+    });
   }
 }
