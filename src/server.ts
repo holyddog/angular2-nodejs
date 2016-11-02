@@ -59,7 +59,10 @@ mongo.connect(url, function (err, db) {
       req,
       res,
       ngModule: MainModule,
-      baseUrl: '/'
+      preboot: false,
+      baseUrl: '/',
+      requestUrl: req.originalUrl,
+      originUrl: 'http://localhost:3000'
     });
   });
   
